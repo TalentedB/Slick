@@ -19,7 +19,7 @@ Studium is a simple, educational programming language designed to help beginners
 It is working towards a **line-by-line** execution, explaining the goal of each operation.
 
 ### Key Features
-- **Support variables, loops, conditionals, and functions**  
+- **Support variables, loops and conditionals**  
 - **Educational focus:** simple syntax, ideal for students learning programming  
 - **Built using:** Python + Lark (for parsing)
 
@@ -34,13 +34,11 @@ Studium supports the following types:
 - **boolean**: `true` or `false`
 - **char**: single character
 - **string**: sequence of characters
-- **nulltype**: represents absence of value
 
 **Type Rules:**
 - Assignment is allowed only between compatible types.
 - Numeric widening is allowed: `int → double`.
 - Numeric shortening is allowed: `double → int`.
-- `null` can be assigned to `char` or `string`.
 - Operations are type-checked at runtime; invalid operations raise `TypeError`.
 
 ### 2.2 Operators & Expressions
@@ -183,7 +181,7 @@ int y = x + 2;
 print(y);
 ```
 
-**Explanation:**
+**Explanation Mode Output:**
 ```csharp
 [Line1] Created variable 'x' with value 5
 [Line2] Created variable 'y' with value 7
@@ -201,7 +199,7 @@ if (x > 5) {
 }
 ```
 
-**Explanation:**
+**Explanation Mode Output:**
 ```csharp
 [Line1] Created variable 'x' with value 10
 [Line2] Condition 'x > 5' evaluated to True
@@ -218,7 +216,7 @@ while (i < 3) {
 }
 ```
 
-**Explanation:**
+**Explanation Mode Output:**
 ```csharp
 [Line1] Created variable 'i' with value 0
 [Line2] Checking condition 'i < 3' → True
@@ -266,14 +264,6 @@ Output
       - Evaluate arithmetic, logical and unary expressions.
       - Execute statements: variable declarations, assignments, prints, blocks and loops.
       - Type-check values using `typeof()` and `is_assignable()`.
-
-4. **Explanation Layer**
-   - Generates **step-by-step output** for each executed line.  
-   - Prints:
-     - Variable creation and updates  
-     - Expression evaluations  
-     - Conditional and block decisions  
-     - Print outputs
 
 ### 5.3 Evaluator Engine
 The interpreter in Studium is implemented as a **class-based AST evaluator** using Lark’s `Transformer`.
@@ -335,7 +325,7 @@ Key Features:
 
 | Flags     | Description |
 |----------------|----------------------------------|
-| --Explain      | A line-by-line execution of program. |
+| ```--explain```      | A line-by-line execution of program. |
 
 ## 8. Implementation Details
 
@@ -354,11 +344,14 @@ Key Features:
     - Nested function scopes
     - Classes and objects
 - Integrate line-by-line explanation in real-time for educational mode
-- Integrate O(n) evaluator for O(n) performance mode
-- Integrate automated test suites for programs for test mode.
+- Integrate time complexity evaluator for time complexity performance mode
+- Integrate automated test suite regeneration for test regeneration mode.
+- Integrate test framework
 - Add debugging features: step execution, breakpoints, variable watches
 
 ## 10. License & Credits
 © 2025 Team Awesome.
 This project was developed for UVEC to promote computer science education through interactive language design.
 
+Licensed under the MIT License.  
+See [LICENSE](./LICENSE) for details.
