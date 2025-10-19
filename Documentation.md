@@ -345,7 +345,7 @@ Key Features:
     - Classes and objects
 - Integrate line-by-line explanation in real-time for educational mode
 - Integrate time complexity evaluator for time complexity performance mode
-- Integrate automated test suite regeneration for test regeneration mode.
+- Integrate automated test suite (AI generation) for AI test mode.
 - Integrate test framework
 - Add debugging features: step execution, breakpoints, variable watches
 
