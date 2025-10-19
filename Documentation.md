@@ -13,10 +13,9 @@
 ### Description  
 Studium is a simple, educational programming language designed to help beginners understand **the underlying programming basics**.  
 
-It can execute code **line-by-line**, explaining the goal of each operation.
+It is working towards a **line-by-line** execution, explaining the goal of each operation.
 
 ### Key Features
-- **Line-by-line explanations** for each executed statement  
 - **Support variables, loops, conditionals, and functions**  
 - **Educational focus:** simple syntax, ideal for students learning programming  
 - **Built using:** Python + Lark (for parsing)
@@ -25,29 +24,59 @@ It can execute code **line-by-line**, explaining the goal of each operation.
 
 ## 2. Language Specification
 
-### 2.1 Lexical Elements
+### 2.1 Type System
 
-**Comments:**
-```plaintext
-# This is a comment
-```
+Studium supports the following types:
+- **int**: integers
+- **double**: floating-point numbers
+- **boolean**: `true` or `false`
+- **char**: single character
+- **string**: sequence of characters
+- **nulltype**: represents absence of value
 
-**Identifiers:**
-```plaintext
-# This is a comment
-```
+**Type Rules:**
+- Assignment is allowed only between compatible types.
+- Numeric widening is allowed: `int → double`.
+- Numeric shortening is allowed: `double → int`.
+- `null` can be assigned to `char` or `string`.
+- Operations are type-checked at runtime; invalid operations raise `TypeError`.
 
-**Keywords:**
-```plaintext
-# This is a comment
-```
+### 2.2 Operators & Expressions
 
-**Operators:**
-```plaintext
-# This is a comment
-```
+| Operator | Type         | Behavior                                         |
+|----------|--------------|------------------------------------------------|
+| +        | numeric/str  | Adds numbers or concatenates strings           |
+| -        | numeric      | Subtracts numbers                              |
+| *        | numeric      | Multiplies numbers                              |
+| /        | numeric      | Divides numbers; raises ZeroDivisionError if denominator is 0 |
+| %        | numeric      | Modulus                                       |
+| ==, !=   | any          | Equality/Inequality                            |
+| <, <=, >, >= | numeric  | Comparisons                                   |
+| &&       | boolean      | Logical AND                                   |
+| ||       | boolean      | Logical OR                                    |
+| !        | boolean      | Logical NOT                                   |
+| unary -  | numeric      | Negation                                      |
 
-### 2.2 Grammar (EBNF)
+### 2.4 Keywords
+
+| Keyword | Description | Example |
+|---------|-------------|---------|
+| `if`    | Begins a conditional branch. Executes the `then` block if the condition is true. | `if (x > 0) { print(x); }` |
+| `else`  | Optional part of an `if` statement that executes if the condition is false. | `if (x > 0) { print(x); } else { print(0); }` |
+| `for`   | Begins a `for` loop (currently planned/future implementation). | `for (int i = 0; i < 10; i = i + 1) { print(i); }` |
+| `while` | Begins a `while` loop that executes while a condition is true. | `while (x < 10) { x = x + 1; }` |
+| `print` | Outputs the value of an expression to the console (or explanation layer). | `print("Hello")` |
+| `int`   | Declares an integer variable. | `int x = 5;` |
+| `double`| Declares a floating-point variable. | `double y = 3.14;` |
+| `boolean` | Declares a boolean variable. | `boolean flag = true;` |
+| `char`  | Declares a single character variable. | `char c = 'a';` |
+| `string`| Declares a string variable. | `string name = "Alice";` |
+
+**Notes:**
+- Keywords are **case-sensitive**.
+- Using a keyword as an identifier will result in a **SyntaxError**.
+
+## 3. Grammar (EBNF)
 
 The grammar defines the **structure and syntax rules** of Studium. It is written in EBNF notation and implemented in Lark.
 
@@ -83,52 +112,19 @@ primitive ::= INT_LIT | FLOAT_LIT | CHAR_LIT | STRING | "true" | "false" | "null
 
 ```
 
-### 2.3 Type System
+## 4. Example Programs
 
-Studium supports the following types:
-- **int**: integers
-- **double**: floating-point numbers
-- **boolean**: `true` or `false`
-- **char**: single character
-- **string**: sequence of characters
-- **nulltype**: represents absence of value
+### 4.1 Variable Binding
 
-**Type Rules:**
-- Assignment is allowed only between compatible types.
-- Numeric widening is allowed: `int → double`.
-- Numeric shortening is allowed: `double → int`.
-- `null` can be assigned to `char` or `string`.
-- Operations are type-checked at runtime; invalid operations raise `TypeError`.
+### 4.2 Conditional Logic
 
-### 2.4 Operators & Expressions
+### 4.3 Loop Example
 
-| Operator | Type         | Behavior                                         |
-|----------|--------------|------------------------------------------------|
-| +        | numeric/str  | Adds numbers or concatenates strings           |
-| -        | numeric      | Subtracts numbers                              |
-| *        | numeric      | Multiplies numbers                              |
-| /        | numeric      | Divides numbers; raises ZeroDivisionError if denominator is 0 |
-| %        | numeric      | Modulus                                       |
-| ==, !=   | any          | Equality/Inequality                            |
-| <, <=, >, >= | numeric  | Comparisons                                   |
-| &&       | boolean      | Logical AND                                   |
-| ||       | boolean      | Logical OR                                    |
-| !        | boolean      | Logical NOT                                   |
-| unary -  | numeric      | Negation                                      |
+### 4.4 Functions
 
-## 3. Example Programs
+## 5. Interpreter Architecture
 
-### 3.1 Variable Binding
-
-### 3.2 Conditional Logic
-
-### 3.3 Loop Example
-
-### 3.4 Functions
-
-## 4. Interpreter Architecture
-
-### 4.1 Architecture Overview
+### 5.1 Architecture Overview
 
 Studium's interpreter follows modern language implementation that separates parsing and evaluation. This makes it easy to maintain and extend.
 
@@ -147,7 +143,7 @@ Output
 Explanation Layer (Educational Output)
 ```
 
-### 4.2 Layer Responsibilities
+### 5.2 Layer Responsibilities
 
 1. **Lexer & Parser**
    - Uses **Lark** to tokenize source code and generate a parse tree.  
@@ -176,7 +172,7 @@ Explanation Layer (Educational Output)
      - Conditional and block decisions  
      - Print outputs
 
-### 4.3 Evaluator Engine
+### 5.3 Evaluator Engine
 The interpreter in Studium is implemented as a **class-based AST evaluator** using Lark’s `Transformer`.
 
 Key Features:
@@ -208,7 +204,7 @@ Key Features:
   - The evaluator currently handles expressions, assignments, conditional and loops.  
   - It is designed to **extend to functions and classes** seamlessly.
 
-#### 4.3.1 Evalutator Engine Methods
+#### 5.3.1 Evalutator Engine Methods
 | Method Name         | Arguments                        | Purpose |
 |--------------------|---------------------------------|---------|
 | int_lit / float_lit / char_lit / string_lit | Token | Converts literal tokens to Python values |
@@ -222,7 +218,7 @@ Key Features:
 | while_stmt          | condition_tree, body_tree | Evaluates while loops |
 | for_stmt            | for_init, expr, for_update, body_tree | Placeholder for future for-loops |
 
-## 5. Error Handling
+## 6. Error Handling
 
 | Error Type     | Example                           | Description |
 |----------------|----------------------------------|------------|
@@ -231,11 +227,11 @@ Key Features:
 | NameError      | print(x) when x undefined        | Variable not found |
 | ValueError     | Unsupported operator             | Operator not recognized |
 
-## 6. Flags
+## 7. Flags
 
 Educational Mode.
 
-## 7. Implementation Details
+## 8. Implementation Details
 
 | Component | Library/Tool | Notes |
 | --------- | ------------ | ----- |
@@ -244,7 +240,7 @@ Educational Mode.
 | CLI interface | argparse | Supports ```--explain```. |
 
 
-## 8. Future Enhancements
+## 9. Future Enhancements
 
 - Implement full `for` loops with initialization, condition, update, and block execution
 - Extend `Evaluator` to support:
@@ -252,11 +248,11 @@ Educational Mode.
     - Nested function scopes
     - Classes and objects
 - Integrate line-by-line explanation in real-time for educational mode
-- Integration O(n) evaluator for performance analysis mode
+- Integrate O(n) evaluator for performance analysis mode
 - Itegrate automated test suites for programs for test mode.
 - Add debugging features: step execution, breakpoints, variable watches
 
-## 9. License & Credits
+## 10. License & Credits
 © 2025 Team Awesome.
 This project was developed for UVEC to promote computer science education through interactive language design.
 
