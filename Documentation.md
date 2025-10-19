@@ -1,14 +1,17 @@
 # Language Documentation: Studium
-*A teaching-oriented language built for students to understand programming basics.*
+*A teaching-oriented language built by students for students to understand programming basics.*
 
 ---
 
 ## 1. Overview
 
-**Language Name:** Studium 
+**Language Name:** Studium
+
 **Version:** 1.0  
+
 **Developed by:** Team Awesome
-**Competition:** UVEC
+
+**Competition:** UVEC 2025
 
 ### Description  
 Studium is a simple, educational programming language designed to help beginners understand **the underlying programming basics**.  
@@ -20,7 +23,6 @@ It is working towards a **line-by-line** execution, explaining the goal of each 
 - **Educational focus:** simple syntax, ideal for students learning programming  
 - **Built using:** Python + Lark (for parsing)
 
----
 
 ## 2. Language Specification
 
@@ -57,7 +59,7 @@ Studium supports the following types:
 | !        | boolean      | Logical NOT                                   |
 | unary -  | numeric      | Negation                                      |
 
-### 2.4 Keywords
+### 2.3 Keywords
 
 | Keyword | Description | Example |
 |---------|-------------|---------|
@@ -83,44 +85,147 @@ The grammar defines the **structure and syntax rules** of Studium. It is written
 The code block below show cases **Variables Declarations**, **Assignments**, **Print statements**, **Blocks**, **Expressions**, and **Primitive Literals**.
 
 ```ebnf
-start ::= stmt+
+// ---------- Entry ----------
+start: stmt+
 
-stmt ::= decl_stmt
-       | assign_stmt
-       | print_stmt
-       | block
-       | expr ";"
+// ---------- Statements ----------
+stmt: decl_stmt
+    | assign_stmt
+    | print_stmt
+    | for_stmt
+    | while_stmt
+    | if_stmt
+    | block
+    | expr ";"                      -> expr_stmt
 
-decl_stmt ::= type_kw NAME ("=" expr)? ";"
-assign_stmt ::= NAME "=" expr ";"
-print_stmt ::= "print" "(" expr ")" ";"
-block ::= "{" stmt* "}"
+decl_stmt: type_kw NAME ("=" expr)? ";"        -> typed_decl
+assign_stmt: NAME "=" expr ";"                 -> assign
+print_stmt: "print" "(" expr ")" ";"           -> print_stmt
+block: "{" stmt* "}"
 
-type_kw ::= "int" | "double" | "boolean" | "char" | "string"
+// Control flow statements
+if_stmt: "if" "(" expr ")" block ("else" block)?        -> if_stmt
+while_stmt: "while" "(" expr ")" block                  -> while_stmt
 
-?expr ::= logic_or
-?logic_or ::= logic_and | logic_or "||" logic_and
-?logic_and ::= equality | logic_and "&&" equality
-?equality ::= comparison | equality ("==" | "!=") comparison
-?comparison ::= addsub | comparison ("<"|"<="|">"|">=") addsub
-?addsub ::= muldiv | addsub ("+"|"-") muldiv
-?muldiv ::= unary | muldiv ("*"|"/"|"%") unary
-?unary ::= "!" unary | "-" unary | primary
-?primary ::= primitive | NAME | "(" expr ")"
+// Use *no-semicolon* forms inside for(...)
+for_stmt: "for" "(" for_init? ";" expr? ";" for_update? ")" block -> for_stmt
+for_init: decl_nosemi | assign_nosemi | expr
+for_update: assign_nosemi | expr
 
-primitive ::= INT_LIT | FLOAT_LIT | CHAR_LIT | STRING | "true" | "false" | "null"
+// no-semicolon helpers for for(...)
+decl_nosemi: type_kw NAME ("=" expr)?
+assign_nosemi: NAME "=" expr
 
+// ---------- Types ----------
+type_kw: "int" | "double" | "boolean" | "char" | "string"
+
+// ---------- Expressions (low → high precedence) ----------
+?expr: logic_or
+?logic_or: logic_and
+         | logic_or "||" logic_and -> lor
+?logic_and: equality
+          | logic_and "&&" equality -> land
+?equality: comparison
+         | equality "==" comparison -> eq
+         | equality "!=" comparison -> ne
+?comparison: addsub
+           | comparison "<" addsub  -> lt
+           | comparison "<=" addsub -> le
+           | comparison ">" addsub  -> gt
+           | comparison ">=" addsub -> ge
+?addsub: muldiv
+       | addsub "+" muldiv -> add
+       | addsub "-" muldiv -> sub
+?muldiv: unary
+       | muldiv "*" unary -> mul
+       | muldiv "/" unary -> div
+       | muldiv "%" unary -> mod
+?unary: "!" unary                                  -> not_evaluator
+      | "-" unary                                  -> neg_evaluator
+      | primary
+?primary: primitive
+        | NAME                                     -> var
+        | "(" expr ")"
+
+// ---------- Primitives ----------
+primitive: INT        -> int_lit
+         | FLOAT      -> float_lit
+         | CHAR       -> char_lit
+         | STRING     -> string_lit
+         | "true"     -> true_lit
+         | "false"    -> false_lit
+         | "null"     -> null_lit
+
+// ---------- Tokens ----------
+%import common.CNAME -> NAME
+%import common.INT
+%import common.ESCAPED_STRING -> STRING
+CHAR: /'([^'\\]|\\.)'/
+
+// Unsigned float: requires a decimal point (and optional exponent)
+// (keeps sign handling in the unary rule)
+FLOAT: /\d+\.\d+([eE][+-]?\d+)?/ | /\d+[eE][+-]?\d+/
+
+// ---------- Whitespace & comments ----------
+%import common.WS
+%ignore WS
+%ignore /\/\/[^\n]*/              // line comments starting with //
+%ignore /(?s:\/\*.*?\*\/)/         // block comments /* ... */
 ```
 
 ## 4. Example Programs
 
 ### 4.1 Variable Binding
 
+```plaintext
+int x = 10;
+int y = x + 2;
+print(y);
+```
+
+**Explanation:**
+```csharp
+[Line1] Created variable 'x' with value 5
+[Line2] Created variable 'y' with value 7
+[Line3] Output: 7
+```
+
 ### 4.2 Conditional Logic
+
+```plaintext
+int x = 10;
+if (x > 5) {
+    print("Large");
+} else {
+    print("Small");
+}
+```
+
+**Explanation:**
+```csharp
+[Line1] Created variable 'x' with value 10
+[Line2] Condition 'x > 5' evaluated to True
+[Line3] Output: Large
+```
 
 ### 4.3 Loop Example
 
-### 4.4 Functions
+```plaintext
+int i = 0;
+while (i < 3) {
+    print(i);
+    i = i + 1;
+}
+```
+
+**Explanation:**
+```csharp
+[Line1] Created variable 'i' with value 0
+[Line2] Checking condition 'i < 3' → True
+[Line3] Output: 0
+[Line4] Updated 'i' to 1
+...
+```
 
 ## 5. Interpreter Architecture
 
@@ -139,8 +244,6 @@ Abstract Syntax Tree (AST)
 Evaluator Engine (Transforms AST)
    ↓
 Output
-   ↓
-Explanation Layer (Educational Output)
 ```
 
 ### 5.2 Layer Responsibilities
@@ -222,6 +325,7 @@ Key Features:
 
 | Error Type     | Example                           | Description |
 |----------------|----------------------------------|------------|
+| SyntaxError      | Invalid syntax according to grammar | Invalid Syntax |
 | TypeError      | 'a' - 3                           | Invalid type operation |
 | ZeroDivisionError | 5 / 0                          | Division by zero |
 | NameError      | print(x) when x undefined        | Variable not found |
@@ -229,7 +333,9 @@ Key Features:
 
 ## 7. Flags
 
-Educational Mode.
+| Flags     | Description |
+|----------------|----------------------------------|
+| --Explain      | A line-by-line execution of program. |
 
 ## 8. Implementation Details
 
@@ -248,8 +354,8 @@ Educational Mode.
     - Nested function scopes
     - Classes and objects
 - Integrate line-by-line explanation in real-time for educational mode
-- Integrate O(n) evaluator for performance analysis mode
-- Itegrate automated test suites for programs for test mode.
+- Integrate O(n) evaluator for O(n) performance mode
+- Integrate automated test suites for programs for test mode.
 - Add debugging features: step execution, breakpoints, variable watches
 
 ## 10. License & Credits
