@@ -5,6 +5,7 @@ import math
 from Environment import Environment
 import os
 
+# Base functionality of some functions was written with AI, to allow for faster iterations, and was built on top of.
 def typeof(v) -> str:
     if v is None:
         return "nulltype"
