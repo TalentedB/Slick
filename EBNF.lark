@@ -1,0 +1,86 @@
+// ---------- Entry ----------
+start: stmt+
+
+// ---------- Statements ----------
+stmt: decl_stmt
+    | assign_stmt
+    | print_stmt
+    | for_stmt
+    | while_stmt
+    | if_stmt
+    | block
+    | expr ";"                      -> expr_stmt
+
+decl_stmt: type_kw NAME ("=" expr)? ";"        -> typed_decl
+assign_stmt: NAME "=" expr ";"                 -> assign
+print_stmt: "print" "(" expr ")" ";"           -> print_stmt
+block: "{" stmt* "}"
+
+// Control flow statements
+if_stmt: "if" "(" expr ")" block ("else" block)?        -> if_stmt
+while_stmt: "while" "(" expr ")" block                  -> while_stmt
+
+// Use *no-semicolon* forms inside for(...)
+for_stmt: "for" "(" for_init? ";" expr? ";" for_update? ")" block -> for_stmt
+for_init: decl_nosemi | assign_nosemi | expr
+for_update: assign_nosemi | expr
+
+// no-semicolon helpers for for(...)
+decl_nosemi: type_kw NAME ("=" expr)?
+assign_nosemi: NAME "=" expr
+
+// ---------- Types ----------
+type_kw: "int" | "double" | "boolean" | "char" | "string"
+
+// ---------- Expressions (low → high precedence) ----------
+?expr: logic_or
+?logic_or: logic_and
+         | logic_or "||" logic_and -> lor
+?logic_and: equality
+          | logic_and "&&" equality -> land
+?equality: comparison
+         | equality "==" comparison -> eq
+         | equality "!=" comparison -> ne
+?comparison: addsub
+           | comparison "<" addsub  -> lt
+           | comparison "<=" addsub -> le
+           | comparison ">" addsub  -> gt
+           | comparison ">=" addsub -> ge
+?addsub: muldiv
+       | addsub "+" muldiv -> add
+       | addsub "-" muldiv -> sub
+?muldiv: unary
+       | muldiv "*" unary -> mul
+       | muldiv "/" unary -> div
+       | muldiv "%" unary -> mod
+?unary: "!" unary                                  -> not_evaluator
+      | "-" unary                                  -> neg_evaluator
+      | primary
+?primary: primitive
+        | NAME                                     -> var
+        | "(" expr ")"
+
+// ---------- Primitives ----------
+primitive: INT        -> int_lit
+         | FLOAT      -> float_lit
+         | CHAR       -> char_lit
+         | STRING     -> string_lit
+         | "true"     -> true_lit
+         | "false"    -> false_lit
+         | "null"     -> null_lit
+
+// ---------- Tokens ----------
+%import common.CNAME -> NAME
+%import common.INT
+%import common.ESCAPED_STRING -> STRING
+CHAR: /'([^'\\]|\\.)'/
+
+// Unsigned float: requires a decimal point (and optional exponent)
+// (keeps sign handling in the unary rule)
+FLOAT: /\d+\.\d+([eE][+-]?\d+)?/ | /\d+[eE][+-]?\d+/
+
+// ---------- Whitespace & comments ----------
+%import common.WS
+%ignore WS
+%ignore /\/\/[^\n]*/              // line comments starting with //
+%ignore /(?s:\/\*.*?\*\/)/         // block comments /* ... */
