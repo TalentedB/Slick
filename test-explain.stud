@@ -1,0 +1,13 @@
+// Simple test for explain mode
+int x = 5;
+int y = 10;
+int sum = x + y;
+print(sum);
+
+if (x < y) {
+    print("x is less than y");
+}
+
+for (int i = 0; i < 3; i = i + 1) {
+    print(i);
+}

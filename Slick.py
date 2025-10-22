@@ -72,7 +72,9 @@ def main():
 
     env = Environment()
 
-    Evaluator(env).transform(tree)
+    # Pass the explain flag and source lines to the evaluator
+    source_lines = text.split('\n')
+    Evaluator(env, explain=args.explain, source_lines=source_lines).transform(tree)
 
 
 
