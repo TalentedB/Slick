@@ -1,0 +1,35 @@
+// Comprehensive test of for, while, and if statements
+
+print("Testing for loop:");
+for (int i = 0; i < 3; i = i + 1) {
+    print(i);
+}
+
+print("Testing while loop:");
+int j = 0;
+while (j < 3) {
+    print(j);
+    j = j + 1;
+}
+
+print("Testing if statement:");
+int x = 5;
+if (x > 3) {
+    print("x is greater than 3");
+}
+
+print("Testing if-else statement:");
+if (x < 3) {
+    print("x is less than 3");
+} else {
+    print("x is not less than 3");
+}
+
+print("Testing nested loops:");
+for (int a = 0; a < 2; a = a + 1) {
+    for (int b = 0; b < 2; b = b + 1) {
+        print(a * 10 + b);
+    }
+}
+
+print("All tests passed!");

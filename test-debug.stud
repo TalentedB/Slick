@@ -1,0 +1,6 @@
+// Simple debug test
+print(42);
+for (int j = 0; j < 2; j = j + 1) {
+    print(j);
+}
+print(99);

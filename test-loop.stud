@@ -1,0 +1,11 @@
+// Test for loop without variable shadowing
+for (int j = 0; j < 4; j = j + 1) {
+    print(j);
+}
+
+// Test while loop
+int k = 0;
+while (k < 3) {
+    print(k);
+    k = k + 1;
+}
